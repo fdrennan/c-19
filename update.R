@@ -19,7 +19,10 @@ covid <-
 
 glimpse(covid)
 
-covid %>%
+covid_locations <-
+  covid %>%
   group_by(continent, location) %>%
   count()
 
+
+usethis::use_data(covid_locations, overwrite = TRUE)
