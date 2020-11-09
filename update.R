@@ -22,3 +22,4 @@ glimpse(covid)
 covid %>%
   group_by(continent, location) %>%
   count()
+
