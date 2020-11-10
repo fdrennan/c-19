@@ -1,0 +1,7 @@
+^renv$
+^renv\.lock$
+^c-19\.Rproj$
+^\.Rproj\.user$
+app.R
+^codecov\.yml$
+^README\.Rmd$
