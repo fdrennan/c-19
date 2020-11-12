@@ -21,7 +21,7 @@ grab_meta <- function() {
 
 
 covid_data <- grab_meta()
-ids <- sort(unique(covid_data$id))
+location <- sort(unique(covid_data$location))
 column_option <- colnames(covid_data)[!colnames(covid_data) %in% c('iso_code', 'continent', 'location', 'date')]
 
 
@@ -34,7 +34,7 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    selectizeInput(inputId = 'location', 'Location', ids, selected = ids[[1]]),
+    selectizeInput(inputId = 'location', 'Location', location, selected = location[[1]]),
     selectizeInput(inputId = 'column_option', 'Type', column_option, selected = column_option[[1]]),
     tabItems(
       # First tab content
@@ -50,9 +50,9 @@ ui <- dashboardPage(
 server <- function(input, output) {
 
   output$death_plot <- renderPlot({
-    
+
     get_covid <- function(
-      query_id = input$location, 
+      query_id = NULL, 
       from = Sys.Date() - 60, 
       to = Sys.Date()
     ) {
@@ -60,14 +60,15 @@ server <- function(input, output) {
       
       covid_data <- 
         tbl(con, in_schema('public', 'covid')) %>% 
-        filter(id == query_id,
-               between(date, from, to))
+        filter(location == query_id,
+               between(date, local(from), (to)))
+  
       
       collect(covid_data)
     }
     
-    covid_data <- get_covid()
-    
+    covid_data <- get_covid(query_id = input$location)
+  
     plot_data <- select(covid_data, date, location, input$column_option) 
     
     ggplot(plot_data) +
